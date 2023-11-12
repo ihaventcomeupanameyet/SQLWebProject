@@ -145,4 +145,4 @@ CONSTRAINT InID FOREIGN KEY (InID)
 REFERENCES inspector(InID),
 CONSTRAINT score check (score>=0 and score<=100)
 );
-
+Alter table product alter column link type Varchar;
