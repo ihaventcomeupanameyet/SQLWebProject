@@ -1,0 +1,57 @@
+.LoginWrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/wharehouse.webp");
+}
+.InnerWrapper {
+  width: 80%;
+  height: 80%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.form {
+  border: 2px solid black;
+  padding: 50px;
+  border-radius: 20px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.UserInput {
+  margin-bottom: 15px;
+  padding: 5px 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+button {
+  padding: 5px 50px;
+  border-radius: 15px;
+}
+
+button:hover {
+  background-color: grey;
+  color: white;
+}
+.fogetPassword,
+.SignUp {
+  color: black;
+  font-size: 0.8em;
+  text-decoration: none;
+}
+.link:hover {
+  color: lightblue;
+}
+
+.ProvinceDiv {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
