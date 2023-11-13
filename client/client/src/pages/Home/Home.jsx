@@ -7,6 +7,12 @@ import Cart from "../../components/Cart/Cart";
 export default function Home() {
   const [data, setData] = useState([]);
   const [showCart, setShowCart] = useState(false);
+  const [user, setUser] = useState("");
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -22,6 +28,10 @@ export default function Home() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setUser(localStorage.getItem("token"));
+  }, []);
+
   return (
     <div>
       <div className="Headering">
@@ -35,9 +45,11 @@ export default function Home() {
           <li className="ko">
             <a href="/about">About</a>
           </li>
-          <li className="ko">
-            <a href="/login">Login</a>
+
+          <li className="ko" onClick={handleLogout}>
+            Logout
           </li>
+
           <li className="ko icon">
             <FaShoppingCart onClick={() => setShowCart(!showCart)} />
           </li>
