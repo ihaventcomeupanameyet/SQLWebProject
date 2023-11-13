@@ -22,7 +22,7 @@ app
 app.get("/getData", async (req, res) => {
   try {
     const result = await pool.query(
-      "Select i.wid, p.name, i.sid,i.price, p.link from inventory i, product p where p.pid=i.pid"
+      "Select i.wid, p.name, i.sid,i.price, p.link, p.pid from inventory i, product p where p.pid=i.pid"
     );
     res.json(result.rows);
   } catch {
