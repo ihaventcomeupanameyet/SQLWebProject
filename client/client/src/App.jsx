@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Auth/Login";
 import SingUp from "./pages/Auth/SingUp";
 import Home from "./pages/Home/Home";
+import ManagerMainPage from "./pages/ManagerMainPage/ManagerMainPage";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -35,6 +36,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SingUp />} />
         <Route path="/" element={<Home />} />
+        <Route path="/ManagerMainPage" element={<ManagerMainPage />}></Route>
       </Routes>
     </BrowserRouter>
   );

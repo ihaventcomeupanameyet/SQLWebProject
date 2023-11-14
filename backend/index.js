@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const { Connection } = require("pg");
 const jwt = require("jsonwebtoken");
+const { json } = require("body-parser");
 const app = express();
 const port = 3000;
 
@@ -45,6 +46,21 @@ app.post("/loginCheck", async (req, res) => {
   }
 });
 
+app.get("/getGivenQuery", async (req, res) => {
+  try {
+    const result = await pool.query("select* from inventory");
+    const colNumaes = result.fields.map((field) => field.name);
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 app.post("/addTheOrder", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { products, totalPrice } = req.body;
@@ -65,8 +81,6 @@ app.post("/addTheOrder", async (req, res) => {
     console.log(oid);
     const result = await pool.query(query2, values2);
     for (const element of products) {
-      console.log(element);
-
       try {
         const query3 =
           "insert into itemsorder (oid, cid, wid, pid, sid, quantity) values ($1, $2, $3, $4, $5, $6)";
