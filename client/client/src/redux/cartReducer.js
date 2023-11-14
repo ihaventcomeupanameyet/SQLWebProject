@@ -23,8 +23,9 @@ export const cartSlice = createSlice({
       }
     },
     removeItem: (state, action) => {
+      console.log(action);
       state.products = state.products.filter(
-        (product) => product.pid !== action.payload
+        (product) => product.pid !== action.payload.pid
       );
     },
     resetCart: (state) => {

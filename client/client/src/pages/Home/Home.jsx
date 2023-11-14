@@ -53,7 +53,7 @@ export default function Home() {
           <li className="ko icon">
             <FaShoppingCart onClick={() => setShowCart(!showCart)} />
           </li>
-          {showCart && <Cart />}
+          {showCart && <Cart setShowCart={setShowCart} />}
         </ul>
       </div>
 

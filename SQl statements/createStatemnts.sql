@@ -146,3 +146,6 @@ REFERENCES inspector(InID),
 CONSTRAINT score check (score>=0 and score<=100)
 );
 Alter table product alter column link type Varchar;
+alter table orders alter column price type numeric(15, 4);
+alter table itemsorder drop constraint itemsorder_pk;
+alter table itemsorder add primary key (oid, cid, wid, pid,sid);
