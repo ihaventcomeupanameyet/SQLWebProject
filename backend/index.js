@@ -117,6 +117,26 @@ app.post("/addTheOrder", async (req, res) => {
     res.status(400);
   }
 });
+app.post("/signUp" ,async (req, res) => {
+  const { name, street_address, postal_code, email, city, province, psword,} = req.body;
+  try{
+    let cid;
+    while (true) {
+      cid = Math.floor(Math.random() * 1000000);
+      const query1 = "Select cid from client where cid=$1";
+      const result = await pool.query(query1, [cid]);
+      if (result.rows.length == 0) {
+        break;
+      }
+    }
+    const query1 = "insert into client(CID, name, street_address, postal_code, email, password, city, province) values ($1, $2, $3, $4, $5, $6,$7,$8)";
+    const value1 = [cid,name,street_address,postal_code,email,psword,city,province];
+    const result = await pool.query(query1, value1);
+    res.status(200).json({ msg: "Added To the Database" });
+  } catch(error) {
+    console.log(error);
+  }
+});
 app.listen(port, () => {
   console.log(`Server is runining on port ${port}`);
 });
