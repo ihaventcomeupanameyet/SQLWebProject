@@ -1,3 +1,4 @@
+//Mostly taken from https://github.com/gyunayK/Ecomerce_Strapi/blob/main/eCommerce/client/src/redux/cartReducer.js
 import cartReducer from "./cartReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import {

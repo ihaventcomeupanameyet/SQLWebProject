@@ -28,8 +28,8 @@ app.get("/getData", async (req, res) => {
       "Select i.wid, p.name, i.sid,i.price, p.link, p.pid from inventory i, product p where p.pid=i.pid"
     );
     res.json(result.rows);
-  } catch {
-    console.log("Gunay is not doing");
+  } catch (error) {
+    console.log(error);
   }
 });
 app.post("/loginCheck", async (req, res) => {
@@ -42,7 +42,7 @@ app.post("/loginCheck", async (req, res) => {
     const token = jwt.sign({ id: result.rows[0].cid }, process.env.JWT_SECRET);
     return res.json({ user: token });
   } catch (error) {
-    console.log("Gunay is not doingx2");
+    console.log(error);
   }
 });
 
@@ -117,9 +117,10 @@ app.post("/addTheOrder", async (req, res) => {
     res.status(400);
   }
 });
-app.post("/signUp" ,async (req, res) => {
-  const { name, street_address, postal_code, email, city, province, psword,} = req.body;
-  try{
+app.post("/signUp", async (req, res) => {
+  const { name, street_address, postal_code, email, city, province, psword } =
+    req.body;
+  try {
     let cid;
     while (true) {
       cid = Math.floor(Math.random() * 1000000);
@@ -129,11 +130,21 @@ app.post("/signUp" ,async (req, res) => {
         break;
       }
     }
-    const query1 = "insert into client(CID, name, street_address, postal_code, email, password, city, province) values ($1, $2, $3, $4, $5, $6,$7,$8)";
-    const value1 = [cid,name,street_address,postal_code,email,psword,city,province];
+    const query1 =
+      "insert into client(CID, name, street_address, postal_code, email, password, city, province) values ($1, $2, $3, $4, $5, $6,$7,$8)";
+    const value1 = [
+      cid,
+      name,
+      street_address,
+      postal_code,
+      email,
+      psword,
+      city,
+      province,
+    ];
     const result = await pool.query(query1, value1);
     res.status(200).json({ msg: "Added To the Database" });
-  } catch(error) {
+  } catch (error) {
     console.log(error);
   }
 });

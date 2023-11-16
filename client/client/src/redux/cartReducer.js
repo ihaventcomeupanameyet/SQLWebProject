@@ -1,3 +1,5 @@
+//Mostly taken from https://github.com/gyunayK/Ecomerce_Strapi/blob/main/eCommerce/client/src/redux/cartReducer.js
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {

@@ -1,3 +1,4 @@
+//Took the structure and the reduce method from https://github.com/gyunayK/Ecomerce_Strapi/blob/main/eCommerce/client/src/components/Cart/Cart.jsx
 import React from "react";
 import "./cart.css";
 import { useSelector, useDispatch } from "react-redux";
