@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 
+
 app
   .get("/client", async (req, res) => {
     res.json({ message: "Animal" });
@@ -32,9 +33,9 @@ app.get("/getData", async (req, res) => {
     console.log(error);
   }
 });
+
 app.post("/loginCheck", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const query = "Select cid from client where email=$1 and password=$2";
     const values = [email, password];
@@ -48,8 +49,10 @@ app.post("/loginCheck", async (req, res) => {
 
 app.get("/getGivenQuery", async (req, res) => {
   try {
+  
     const result = await pool.query("select* from inventory");
     const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
     const data = {
       colNumaes,
       rows: result.rows,
@@ -117,6 +120,7 @@ app.post("/addTheOrder", async (req, res) => {
     res.status(400);
   }
 });
+
 app.post("/signUp", async (req, res) => {
   const { name, street_address, postal_code, email, city, province, psword } =
     req.body;
@@ -150,4 +154,300 @@ app.post("/signUp", async (req, res) => {
 });
 app.listen(port, () => {
   console.log(`Server is runining on port ${port}`);
+});
+
+
+// delete items(product)
+app.post("/delete", async(req, res) => {
+  const {pid} = req.body;
+  try  {
+    const query = "delete from products where pid = $1"; 
+    const result = await pool.query(query, [pid]);  // this is the query from the database, output is built in, success or unsucess
+    // ONLY GETS THE TUPPLES, NOT COLUMN NAMES
+    const query2="select*from products";   // we want to display the table after delete!!
+    const result2= await pool.query(query2); 
+    const colNames = result2.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    // CREATE DATAFRAME COMBINING ROWS AND COLUMN NAME BOTH OBTAINED FROM RESULT2
+    const data = {
+      colNames,
+      rows: result2.rows,
+    };
+    res.json(data);   
+  } catch(error) {
+    return res.status(400).json({msg : error.data});
+  }
+}); 
+
+// // aggregation by haivng -> inventory
+// app.post
+
+
+// update inventory
+app.post("/updatInventory", async(req,res) =>  {
+  const {wid, pid, sid, threshold, item_count, price} = req.body;
+
+  try {
+    const updateQue =  "UPDATE inventory SID = $1, threshold  = $2, item_count = $3, price = $4 WHERE WID = $5 AND PID = $6";
+    const result = await pool.query(updateQue, [sid, threshold, item_count, price, wid, pid,]);
+    // get the resulting table after update:
+    const query2 = "SELECT* FROM inventory";
+    const result2 = await pool.query(query2);
+    const colNames = result2.fields.map((field) => field.name);
+    const data_inventory = {
+      colNames,
+      rows: result2.rows,
+    };
+    res.json(data_inventory);
+  }  catch(error) {
+    return res.status(400).json({msg : error.data_inventory});
+}
+});
+
+// join itemorder and order
+app.get("/joinOrder", async (req, res) => {
+
+  try {
+  const result = await pool.query("SELECT ItemsOrder.OID, ItemsOrder.CID, ItemsOrder.WID, ItemsOrder.PID, ItemsOrder.SID, ItemsOrder.quantity, Orders.price FROM ItemsOrder NATURAL JOIN Orders")
+ res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+// aggreation with group by -> OID and CID + price representing total amount spent by each customer
+// app.get("/moneySpent", async (req,res) => {
+
+//   try {
+
+//   }
+
+
+// })
+
+
+// projections
+app.get("/manager", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM manager`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+app.get("/warehouse", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM warehouse`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/product", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM product`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/supplier", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM supplier`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/inventory", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM inventory`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/food", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM food`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/explosive", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM explosive`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/client", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM client`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/Client3", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM Client3`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/Client2", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM Client2`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+app.get("/orders", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM orders`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/inspector", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM inspector`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/ItemsOrder", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM ItemsOrder`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/insurance", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM insurance`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/Insurances", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM Insurances`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/covers", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM covers`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
+
+app.get("/audit", async (req, res) => {
+  const {columns} = req.query;
+  try {
+    const query = `SELECT ${columns} FROM audit`;
+    const result = await pool.query(query);
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
 });
