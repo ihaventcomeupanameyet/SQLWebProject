@@ -152,6 +152,18 @@ app.post("/signUp", async (req, res) => {
     console.log(error);
   }
 });
+
+app.post("/updateInven", async (req, res) => {
+  const {wid,pid,size} = req.body;
+  try {
+    const query = "update inventory set item_count = $1 where wid=$2 and pid=$3";
+    const value = [size,wid,pid];
+    const result = await pool.query(query, value);
+    res.status(200).json({ msg: "Altered item count" });
+  } catch (error) {
+    console.log(error);
+  }
+});
 app.listen(port, () => {
   console.log(`Server is runining on port ${port}`);
 });
