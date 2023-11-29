@@ -6,12 +6,11 @@ export default function ManagerMainPage() {
   const [wid, setwid] = useState("");
   const [pid, setpid] = useState("");
   const [size, setsize] = useState("");
-  const [d_pid,set_dpid] = useState("");
-  const [value,setValue] = useState("");
+  const [d_pid, set_dpid] = useState("");
+  const [value, setValue] = useState("");
 
   const [data, setData] = useState([]);
   const [user, setUser] = useState("");
-
 
   const onChangedpid = (event) => {
     set_dpid(event.target.value);
@@ -28,62 +27,64 @@ export default function ManagerMainPage() {
   const onChangePid = (event) => {
     setpid(event.target.value);
   };
-  
+
   const onChangeSize = (event) => {
     setsize(event.target.value);
   };
 
-  async function netWorth(event){
+  async function netWorth(event) {
     try {
-      const reponse = await fetch(`http://localhost:3000/warehouseNetWorth/${value}`);
+      const reponse = await fetch(
+        `http://localhost:3000/warehouseNetWorth/${value}`
+      );
       const data = await reponse.json();
       setData(data);
-    } catch (error){
-    console.log("Error gettting the data", error);
+    } catch (error) {
+      console.log("Error gettting the data", error);
     }
   }
 
-  async function joinOrder(event){
+  async function joinOrder(event) {
     try {
       const reponse = await fetch("http://localhost:3000/joinOrder");
       const data = await reponse.json();
       setData(data);
-    } catch (error){
-    console.log("Error gettting the data", error);
+    } catch (error) {
+      console.log("Error gettting the data", error);
     }
   }
 
-  async function purchaseAll(event){
+  async function purchaseAll(event) {
     try {
       const reponse = await fetch("http://localhost:3000/purchaseAllItem");
       const data = await reponse.json();
       setData(data);
-    } catch (error){
+    } catch (error) {
       console.log("Error gettting the data", error);
     }
   }
 
-  async function avgItemPerOrder(event){
+  async function avgItemPerOrder(event) {
     try {
       const reponse = await fetch("http://localhost:3000/AvgOrderPerchase");
       const data = await reponse.json();
       setData(data);
-    } catch (error){
+    } catch (error) {
       console.log("Error gettting the data", error);
     }
   }
 
-  async function displayItem(event){
+  async function displayItem(event) {
     try {
       const res = await fetch("http://localhost:3000/product");
       const data = await res.json();
       setData(data);
-    } catch (error){
+    } catch (error) {
       console.log("Error gettting the data", error);
     }
   }
 
-  async function UpdateInven(e){
+  async function UpdateInven(e) {
     e.preventDefault();
     try {
       const reponse = await fetch("http://localhost:3000/updateInven", {
@@ -100,12 +101,12 @@ export default function ManagerMainPage() {
       const res = await fetch("http://localhost:3000/getGivenQuery");
       const data = await res.json();
       setData(data);
-    } catch (error){
+    } catch (error) {
       console.log("Error gettting the data", error);
     }
   }
 
-  async function deleteProduct(e){
+  async function deleteProduct(e) {
     try {
       const reponse = await fetch("http://localhost:3000/delete", {
         method: "POST",
@@ -116,7 +117,7 @@ export default function ManagerMainPage() {
           d_pid,
         }),
       });
-    } catch (error){
+    } catch (error) {
       console.log("Error gettting the data", error);
     }
   }
@@ -134,84 +135,9 @@ export default function ManagerMainPage() {
     fetchData();
   }, []);
 
-
-
   useEffect(() => {
     setUser(localStorage.getItem("token"));
   }, []);
 
-  return (
-    <div className="NewClass">
-      <nav>
-        <Menu:c></Menu:c>
-      </nav>
-      <div>
-        {data ? (
-          <AccessibleTable rows={data.rows} collumns={data.colNumaes} />
-        ) : null}
-        <form onSubmit={UpdateInven}>
-
-        <button className="link" type="submit">
-          Update inventory
-        </button>
-        <input
-            name="wid"
-            className="UserInput"
-            placeholder="wid"
-            value={wid}
-            onChange={onChangeWid}
-        />
-            
-        <input
-            name="pid"
-            className="UserInput"
-            placeholder="pid"
-            value={pid}
-            onChange={onChangePid}
-        />
-
-        <input
-            name="size"
-            className="UserInput"
-            placeholder="New size"
-            value={size}
-            onChange={onChangeSize}
-        />
-        </form>
-
-        <button className="link" onClick={deleteProduct}>
-          Delete item
-        </button>
-        <input
-            name="d_pid"
-            className="UserInput"
-            placeholder="product id"
-            value={d_pid}
-            onChange={onChangedpid}
-        />
-        <button className="link" onClick={displayItem}>
-          Display Product
-        </button>
-        <button className="link" onClick={joinOrder}>
-          Join orders
-        </button>
-        <button className="link" onClick={netWorth}>
-          Warehouse with net value greater than:
-        </button>
-        <input
-            name="value"
-            className="UserInput"
-            placeholder="value"
-            value={value}
-            onChange={onChangeValue}
-        />
-        <button className="link" onClick={avgItemPerOrder}>
-          Average number of item purchased by each client
-        </button>
-        <button className="link" onClick={purchaseAll}>
-          List of user purchased all item
-        </button>
-      </div>
-    </div>
-  );
+  return <div className="NewClass"></div>;
 }
