@@ -78,8 +78,7 @@ CREATE TABLE orders (
 OID int,
 CID int,
 price int NOT NULL,
-CONSTRAINT cid_1 FOREIGN KEY (CID)
-REFERENCES client(CID),
+CONSTRAINT cid_1 FOREIGN KEY (CID) REFERENCES client(CID),
 CONSTRAINT pk_1 PRIMARY KEY (OID,CID),
 
 CONSTRAINT price check (price > 0)
@@ -110,7 +109,7 @@ CONSTRAINT nums check (quantity > 0)
 );
 CREATE TABLE insurance (
 IID int PRIMARY KEY,
-policy text,
+policy CLOB,
 name varchar(255)
 );
 create TABLE Insurances(
