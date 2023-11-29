@@ -322,7 +322,7 @@ app.get("/purchaseAllItem", async (req, res) => {
 app.get("/AvgOrderPerchase", async (req, res) => {
   try {
     const result = await pool.query(
-      "select cid,name, avg(num) as avg_num_items_purchased_per_order from (select c.cid,name,sum(i.quantity) as num from client c, orders o, itemsorder i where c.cid=o.cid and c.cid = i.cid and i.oid = o.oid group by c.cid, o.oid) group by name,cid;"
+      "select cid,name, AVG(num) as avg_num_items_purchased_per_order from (select c.cid,name,sum(i.quantity) as num from client c, orders o, itemsorder i where c.cid=o.cid and c.cid = i.cid and i.oid = o.oid group by c.cid, o.oid) group by name,cid;"
     );
     const colNumaes = result.fields.map((field) => field.name);
     // column names and rows that have all the rows, to display the table.
@@ -341,7 +341,8 @@ app.get("/warehouseNetWorth/:value", async (req, res) => {
   try {
     const netWorth = req.params.value;
     console.log(netWorth);
-    const query= "select w.wid,sum(i.item_count * i.price) as net_value from warehouse w, inventory i where w.wid=i.wid group by w.wid having sum(i.item_count * i.price) > $1";
+    const query =
+      "select w.wid,sum(i.item_count * i.price) as net_value from warehouse w, inventory i where w.wid=i.wid group by w.wid having sum(i.item_count * i.price) > $1";
     const value = [netWorth];
     const result = await pool.query(query, value);
     const colNumaes = result.fields.map((field) => field.name);

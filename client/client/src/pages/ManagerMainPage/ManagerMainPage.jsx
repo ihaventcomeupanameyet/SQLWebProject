@@ -34,11 +34,13 @@ export default function ManagerMainPage() {
 
   async function netWorth(event) {
     try {
-      const reponse = await fetch(`http://localhost:3000/warehouseNetWorth/${value}`);
+      const reponse = await fetch(
+        `http://localhost:3000/warehouseNetWorth/${value}`
+      );
       const data = await reponse.json();
       setData(data);
-    } catch (error){
-    console.log("Error gettting the data", error);
+    } catch (error) {
+      console.log("Error gettting the data", error);
     }
   }
 
