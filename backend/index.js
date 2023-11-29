@@ -478,3 +478,34 @@ app.get("/product", async (req, res) => {
     res.status(400).json({ msg: error.message });
   }
 });
+
+
+
+// selection:
+app.post("/selectInventory", async (req, res) => {
+  const filters = req.body.filters;
+  if (!filters) {
+    return res.status(400).json({ msg: "No filters provided" });
+  }
+  try {
+    const query = "SELECT * FROM inventory WHERE ";
+
+    const filters_toString = [];
+
+    // for loop that connects all conditions
+    filters.forEach((filter, index) => {
+      if (index > 0){
+        query += " AND ";
+      }
+      // place the value of filter in another array and concate those in the end to prevent attack
+      query += `${filter.field} ${filter.operator} $${index + 1}`;
+      filters_toString.push(filter.value);
+    });
+    
+    const result = await pool.query(query,filters_toString);
+    res.json(result.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error" });
+  }
+});
