@@ -21,9 +21,8 @@ export default function AccessibleTable({ rows, collumns }) {
   console.log(rows);
   if (!rows) return "loading";
   return (
-    <TableContainer sx={{ maxWidth: 500 }} component={Paper}>
-      <Table sx={{ maxWidth: 500 }} aria-label="caption table">
-        <caption>A basic table example with a caption</caption>
+    <TableContainer sx={{ maxWidth: 500, maxHeight: 500 }} component={Paper}>
+      <Table sx={{ maxWidth: 500, maxHeight: 500 }} aria-label="caption table">
         <TableHead>
           <TableRow>
             {collumns.map((column) => (
