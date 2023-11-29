@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./home.css";
 import Card from "../../components/Card/Card";
-import { FaShoppingCart } from "react-icons/fa";
 import Cart from "../../components/Cart/Cart";
 
 export default function Home() {
   const [data, setData] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [user, setUser] = useState("");
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -34,29 +28,6 @@ export default function Home() {
 
   return (
     <div>
-      <div className="Headering">
-        <h1 color="white" className="MainTitle">
-          Main Store
-        </h1>
-        <ul>
-          <li className="ko">
-            <a href="/">Home</a>
-          </li>
-          <li className="ko">
-            <a href="/about">About</a>
-          </li>
-
-          <li className="ko" onClick={handleLogout}>
-            Logout
-          </li>
-
-          <li className="ko icon">
-            <FaShoppingCart onClick={() => setShowCart(!showCart)} />
-          </li>
-          {showCart && <Cart setShowCart={setShowCart} />}
-        </ul>
-      </div>
-
       {data && (
         <div className="cardWrapper">
           {data.map((item, index) => (

@@ -66,6 +66,9 @@ export default function ManagerMainPage() {
 
   return (
     <div className="NewClass">
+      <nav>
+        <Menu:c></Menu:c>
+      </nav>
       <div>
         {data ? (
           <AccessibleTable rows={data.rows} collumns={data.colNumaes} />

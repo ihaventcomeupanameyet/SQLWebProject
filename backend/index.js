@@ -13,7 +13,6 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(cors());
 
-
 app
   .get("/client", async (req, res) => {
     res.json({ message: "Animal" });
@@ -49,7 +48,6 @@ app.post("/loginCheck", async (req, res) => {
 
 app.get("/getGivenQuery", async (req, res) => {
   try {
-  
     const result = await pool.query("select* from inventory");
     const colNumaes = result.fields.map((field) => field.name);
     // column names and rows that have all the rows, to display the table.
@@ -64,6 +62,143 @@ app.get("/getGivenQuery", async (req, res) => {
   }
 });
 
+app.post("/proyection", async (req, res) => {
+  try {
+    const { coll, name } = req.body;
+    const format = require("pg-format");
+    const columns = coll.split(",").map((columna) => columna.trim());
+    const columnPlaceholders = columns.map(() => "%I").join(", ");
+    const finalQuery = format(
+      `SELECT ${columnPlaceholders} FROM %I`,
+      ...columns,
+      name
+    );
+    const result = await pool.query(finalQuery);
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//get products table
+app.get("/products", async (req, res) => {
+  try {
+    const result = await pool.query("select pid, name from product");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+app.get("/join", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "select* from orders o, itemsorder i where i.oid=o.oid"
+    );
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/order", async (req, res) => {
+  try {
+    const result = await pool.query("select* from orders");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+app.get("/itemsOrder", async (req, res) => {
+  try {
+    const result = await pool.query("select* from itemsorder");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("/inventoryGetTable", async (req, res) => {
+  try {
+    const result = await pool.query("select* from inventory");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+//get wharegouses
+app.get("/wharehouses", async (req, res) => {
+  try {
+    const result = await pool.query("select* from warehouse");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+//get supplier
+app.get("/supplier", async (req, res) => {
+  try {
+    const result = await pool.query("select* from supplier");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
 app.post("/addTheOrder", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
   const { products, totalPrice } = req.body;
@@ -154,10 +289,11 @@ app.post("/signUp", async (req, res) => {
 });
 
 app.post("/updateInven", async (req, res) => {
-  const {wid,pid,size} = req.body;
+  const { wid, pid, sid, size, price } = req.body;
   try {
-    const query = "update inventory set item_count = $1 where wid=$2 and pid=$3";
-    const value = [size,wid,pid];
+    const query =
+      "update inventory set item_count = $1, price=$2 where wid=$3 and pid=$4 and sid=$5";
+    const value = [size, price, wid, pid, sid];
     const result = await pool.query(query, value);
     res.status(200).json({ msg: "Altered item count" });
   } catch (error) {
@@ -168,16 +304,15 @@ app.listen(port, () => {
   console.log(`Server is runining on port ${port}`);
 });
 
-
 // delete items(product)
-app.post("/delete", async(req, res) => {
-  const {pid} = req.body;
-  try  {
-    const query = "delete from products where pid = $1"; 
-    const result = await pool.query(query, [pid]);  // this is the query from the database, output is built in, success or unsucess
+app.post("/delete", async (req, res) => {
+  const { pid } = req.body;
+  try {
+    const query = "delete from product where pid = $1";
+    const result = await pool.query(query, [pid]); // this is the query from the database, output is built in, success or unsucess
     // ONLY GETS THE TUPPLES, NOT COLUMN NAMES
-    const query2="select*from products";   // we want to display the table after delete!!
-    const result2= await pool.query(query2); 
+    const query2 = "select*from products"; // we want to display the table after delete!!
+    const result2 = await pool.query(query2);
     const colNames = result2.fields.map((field) => field.name);
     // column names and rows that have all the rows, to display the table.
     // CREATE DATAFRAME COMBINING ROWS AND COLUMN NAME BOTH OBTAINED FROM RESULT2
@@ -185,23 +320,31 @@ app.post("/delete", async(req, res) => {
       colNames,
       rows: result2.rows,
     };
-    res.json(data);   
-  } catch(error) {
-    return res.status(400).json({msg : error.data});
+    res.status(200).json({ msg: "Sucess" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ msg: error.data });
   }
-}); 
+});
 
 // // aggregation by haivng -> inventory
 // app.post
 
-
 // update inventory
-app.post("/updatInventory", async(req,res) =>  {
-  const {wid, pid, sid, threshold, item_count, price} = req.body;
+app.post("/updatInventory", async (req, res) => {
+  const { wid, pid, sid, threshold, item_count, price } = req.body;
 
   try {
-    const updateQue =  "UPDATE inventory SID = $1, threshold  = $2, item_count = $3, price = $4 WHERE WID = $5 AND PID = $6";
-    const result = await pool.query(updateQue, [sid, threshold, item_count, price, wid, pid,]);
+    const updateQue =
+      "UPDATE inventory SID = $1, threshold  = $2, item_count = $3, price = $4 WHERE WID = $5 AND PID = $6";
+    const result = await pool.query(updateQue, [
+      sid,
+      threshold,
+      item_count,
+      price,
+      wid,
+      pid,
+    ]);
     // get the resulting table after update:
     const query2 = "SELECT* FROM inventory";
     const result2 = await pool.query(query2);
@@ -211,17 +354,18 @@ app.post("/updatInventory", async(req,res) =>  {
       rows: result2.rows,
     };
     res.json(data_inventory);
-  }  catch(error) {
-    return res.status(400).json({msg : error.data_inventory});
-}
+  } catch (error) {
+    return res.status(400).json({ msg: error.data_inventory });
+  }
 });
 
 // join itemorder and order
 app.get("/joinOrder", async (req, res) => {
-
   try {
-  const result = await pool.query("SELECT ItemsOrder.OID, ItemsOrder.CID, ItemsOrder.WID, ItemsOrder.PID, ItemsOrder.SID, ItemsOrder.quantity, Orders.price FROM ItemsOrder NATURAL JOIN Orders")
- res.json(result.rows);
+    const result = await pool.query(
+      "SELECT ItemsOrder.OID, ItemsOrder.CID, ItemsOrder.WID, ItemsOrder.PID, ItemsOrder.SID, ItemsOrder.quantity, Orders.price FROM ItemsOrder NATURAL JOIN Orders"
+    );
+    res.json(result.rows);
   } catch (error) {
     res.status(400).json({ msg: error.message });
   }
@@ -234,13 +378,11 @@ app.get("/joinOrder", async (req, res) => {
 
 //   }
 
-
 // })
-
 
 // projections
 app.get("/manager", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM manager`;
     const result = await pool.query(query);
@@ -250,22 +392,8 @@ app.get("/manager", async (req, res) => {
     res.status(400).json({ msg: error.message });
   }
 });
-
-app.get("/warehouse", async (req, res) => {
-  const {columns} = req.query;
-  try {
-    const query = `SELECT ${columns} FROM warehouse`;
-    const result = await pool.query(query);
-
-    res.json(result.rows);
-  } catch (error) {
-    res.status(400).json({ msg: error.message });
-  }
-});
-
-
-app.get("/product", async (req, res) => {
-  const {columns} = req.query;
+app.get("/wharehouse", async (req, res) => {
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM product`;
     const result = await pool.query(query);
@@ -276,9 +404,8 @@ app.get("/product", async (req, res) => {
   }
 });
 
-
 app.get("/supplier", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM supplier`;
     const result = await pool.query(query);
@@ -289,9 +416,8 @@ app.get("/supplier", async (req, res) => {
   }
 });
 
-
 app.get("/inventory", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM inventory`;
     const result = await pool.query(query);
@@ -302,10 +428,8 @@ app.get("/inventory", async (req, res) => {
   }
 });
 
-
-
 app.get("/food", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM food`;
     const result = await pool.query(query);
@@ -316,10 +440,8 @@ app.get("/food", async (req, res) => {
   }
 });
 
-
-
 app.get("/explosive", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM explosive`;
     const result = await pool.query(query);
@@ -330,10 +452,8 @@ app.get("/explosive", async (req, res) => {
   }
 });
 
-
-
 app.get("/client", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM client`;
     const result = await pool.query(query);
@@ -344,10 +464,8 @@ app.get("/client", async (req, res) => {
   }
 });
 
-
-
 app.get("/Client3", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM Client3`;
     const result = await pool.query(query);
@@ -358,10 +476,8 @@ app.get("/Client3", async (req, res) => {
   }
 });
 
-
-
 app.get("/Client2", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM Client2`;
     const result = await pool.query(query);
@@ -372,10 +488,8 @@ app.get("/Client2", async (req, res) => {
   }
 });
 
-
-
 app.get("/orders", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM orders`;
     const result = await pool.query(query);
@@ -386,9 +500,8 @@ app.get("/orders", async (req, res) => {
   }
 });
 
-
 app.get("/inspector", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM inspector`;
     const result = await pool.query(query);
@@ -399,9 +512,8 @@ app.get("/inspector", async (req, res) => {
   }
 });
 
-
 app.get("/ItemsOrder", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM ItemsOrder`;
     const result = await pool.query(query);
@@ -412,9 +524,8 @@ app.get("/ItemsOrder", async (req, res) => {
   }
 });
 
-
 app.get("/insurance", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM insurance`;
     const result = await pool.query(query);
@@ -425,9 +536,8 @@ app.get("/insurance", async (req, res) => {
   }
 });
 
-
 app.get("/Insurances", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM Insurances`;
     const result = await pool.query(query);
@@ -438,9 +548,8 @@ app.get("/Insurances", async (req, res) => {
   }
 });
 
-
 app.get("/covers", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM covers`;
     const result = await pool.query(query);
@@ -451,9 +560,8 @@ app.get("/covers", async (req, res) => {
   }
 });
 
-
 app.get("/audit", async (req, res) => {
-  const {columns} = req.query;
+  const { columns } = req.query;
   try {
     const query = `SELECT ${columns} FROM audit`;
     const result = await pool.query(query);
