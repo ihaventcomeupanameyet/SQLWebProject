@@ -219,6 +219,14 @@ app.post("/addTheOrder", async (req, res) => {
     console.log(oid);
     const result = await pool.query(query2, values2);
     for (const element of products) {
+       // FK check
+      const fkCheck = "SELECT EXISTS(SELECT 1 FROM product WHERE pid = $1) AND EXISTS(SELECT 1 FROM warehouse WHERE wid = $2) AND EXISTS(SELECT 1 FROM supplier WHERE sid = $3)";
+      const fkCheckResult = await pool.query(fkCheck, [element.pid, element.wid, element.sid]);
+
+      if (!fkCheckResult.rows[0].exists) {
+        throw new Error("Foreign key constraint violation");
+      }
+      
       try {
         const query3 =
           "insert into itemsorder (oid, cid, wid, pid, sid, quantity) values ($1, $2, $3, $4, $5, $6)";
