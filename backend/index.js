@@ -219,6 +219,14 @@ app.post("/addTheOrder", async (req, res) => {
     console.log(oid);
     const result = await pool.query(query2, values2);
     for (const element of products) {
+       // FK check
+      const fkCheck = "SELECT EXISTS(SELECT 1 FROM product WHERE pid = $1) AND EXISTS(SELECT 1 FROM warehouse WHERE wid = $2) AND EXISTS(SELECT 1 FROM supplier WHERE sid = $3)";
+      const fkCheckResult = await pool.query(fkCheck, [element.pid, element.wid, element.sid]);
+
+      if (!fkCheckResult.rows[0].exists) {
+        throw new Error("Foreign key constraint violation");
+      }
+      
       try {
         const query3 =
           "insert into itemsorder (oid, cid, wid, pid, sid, quantity) values ($1, $2, $3, $4, $5, $6)";
@@ -496,5 +504,36 @@ app.get("/product", async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(400).json({ msg: error.message });
+  }
+});
+
+
+
+// selection:
+app.post("/selectInventory", async (req, res) => {
+  const filters = req.body.filters;
+  if (!filters) {
+    return res.status(400).json({ msg: "No filters provided" });
+  }
+  try {
+    const query = "SELECT * FROM inventory WHERE ";
+
+    const filters_toString = [];
+
+    // for loop that connects all conditions
+    filters.forEach((filter, index) => {
+      if (index > 0){
+        query += " AND ";
+      }
+      // place the value of filter in another array and concate those in the end to prevent attack
+      query += `${filter.field} ${filter.operator} $${index + 1}`;
+      filters_toString.push(filter.value);
+    });
+    
+    const result = await pool.query(query,filters_toString);
+    res.json(result.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Error" });
   }
 });
