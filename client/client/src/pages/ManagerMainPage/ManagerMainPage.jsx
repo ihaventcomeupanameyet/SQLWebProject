@@ -11,9 +11,8 @@ export default function ManagerMainPage() {
 
   const [data, setData] = useState([]);
   const [user, setUser] = useState("");
-  
-  const [valueThreshold, setValueThreshold] = useState("");
 
+  const [valueThreshold, setValueThreshold] = useState("");
 
   const onChangedpid = (event) => {
     set_dpid(event.target.value);
@@ -125,24 +124,22 @@ export default function ManagerMainPage() {
     }
   }
 
-  
-
   async function getInventoryAbove() {
     if (!valueThreshold) {
       alert("Please enter a value threshold");
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/inventoryAbove/${valueThreshold}`);
+      const response = await fetch(
+        `http://localhost:3000/inventoryAbove/${valueThreshold}`
+      );
       const data = await response.json();
-      setData(data); 
+      setData(data);
     } catch (error) {
       console.error("Error fetching inventory", error);
-
     }
   }
 
-  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -160,83 +157,71 @@ export default function ManagerMainPage() {
     setUser(localStorage.getItem("token"));
   }, []);
 
-return (
-  <div className="NewClass">
-    <div>
-      {data ? (
-        <AccessibleTable rows={data.rows} collumns={data.colNumaes} />
-      ) : null}
-      <form onSubmit={UpdateInven}>
+  return (
+    <div className="NewClass">
+      <div>
+        {data ? (
+          <AccessibleTable rows={data.rows} collumns={data.colNumaes} />
+        ) : null}
+        <form onSubmit={UpdateInven}>
+          <button className="link" type="submit">
+            Update inventory
+          </button>
+          <input
+            className="UserInput"
+            placeholder="wid"
+            value={wid}
+            onChange={onChangeWid}
+          />
 
-      <button className="link" type="submit">
-        Update inventory
-      </button>
-      <input
+          <input
+            className="UserInput"
+            placeholder="pid"
+            value={pid}
+            onChange={onChangePid}
+          />
+
+          <input
+            className="UserInput"
+            placeholder="New size"
+            value={size}
+            onChange={onChangeSize}
+          />
+        </form>
+        <button className="link">Delete item</button>
+
+        <button className="link" onClick={joinOrder}>
+          Join Orders
+        </button>
+
+        <button className="link" onClick={avgItemPerOrder}>
+          get average Items in order
+        </button>
+
+        <input
           className="UserInput"
-          placeholder="wid"
-          value={wid}
-          onChange={onChangeWid}
-      />
-          
-      <input
+          placeholder="Enter Client ID"
+          //value={inputCID}
+          onChange={(e) => setInputCID(e.target.value)}
+        />
+        <input
           className="UserInput"
-          placeholder="pid"
-          value={pid}
-          onChange={onChangePid}
-      />
+          placeholder="Enter value threshold"
+          value={valueThreshold}
+          onChange={(e) => setValueThreshold(e.target.value)}
+        />
+        <button className="link" onClick={getInventoryAbove}>
+          Select inventory with value larger than...
+        </button>
 
-      <input
-          className="UserInput"
-          placeholder="New size"
-          value={size}
-          onChange={onChangeSize}
-      />
-    
-      </form>
-      <button className="link">
-        Delete item
-      </button>
+        <button className="link" onClick={netWorth}>
+          netWorth
+        </button>
 
-      <button className="link" onClick={joinOrder}>
-      Join Orders
-      </button>
-
-
-     
-      <button className="link" onClick={avgItemPerOrder}>
-        get average Items in order
-      </button>
-
-  <input
-    className="UserInput"
-    placeholder="Enter Client ID"
-    value={inputCID}
-    onChange={(e) => setInputCID(e.target.value)}
-
-    />
-      <input
-        className="UserInput"
-        placeholder="Enter value threshold"
-        value={valueThreshold}
-        onChange={(e) => setValueThreshold(e.target.value)}
-      />
-      <button className="link" onClick={getInventoryAbove}>
-        Select inventory with value larger than...
-      </button>
-
-
-      <button className="link" onClick={netWorth}>
-        netWorth
-      </button>
-
-
-      <button className="link" onClick={purchaseAll}>
-        List of user purchased all item
-      </button>
-    
-
+        <button className="link" onClick={purchaseAll}>
+          List of user purchased all item
+        </button>
+      </div>
     </div>
-  </div>
-);
-}
+  );
 }

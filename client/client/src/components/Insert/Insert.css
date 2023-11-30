@@ -1,0 +1,12 @@
+.input-select-group {
+  display: flex;
+  gap: 10px;
+}
+
+/* .input-select-group input[type="text"] {
+  flex-grow: 1;
+}
+
+.input-select-group select {
+  flex-basis: auto;
+} */

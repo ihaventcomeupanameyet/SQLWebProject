@@ -49,3 +49,32 @@ form button[type="submit"] {
   cursor: pointer;
   margin-top: 10px;
 }
+
+form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  margin-bottom: 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+form select:hover {
+  border-color: #888;
+}
+
+form select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+form select option {
+  padding: 10px;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+form button[type="submit"] {
+  font-weight: bold;
+}

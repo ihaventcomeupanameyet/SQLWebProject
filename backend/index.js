@@ -167,6 +167,7 @@ app.get("/inventoryGetTable", async (req, res) => {
     console.log(error);
   }
 });
+
 //get wharegouses
 app.get("/wharehouses", async (req, res) => {
   try {
@@ -219,14 +220,6 @@ app.post("/addTheOrder", async (req, res) => {
     console.log(oid);
     const result = await pool.query(query2, values2);
     for (const element of products) {
-       // FK check
-      const fkCheck = "SELECT EXISTS(SELECT 1 FROM product WHERE pid = $1) AND EXISTS(SELECT 1 FROM warehouse WHERE wid = $2) AND EXISTS(SELECT 1 FROM supplier WHERE sid = $3)";
-      const fkCheckResult = await pool.query(fkCheck, [element.pid, element.wid, element.sid]);
-
-      if (!fkCheckResult.rows[0].exists) {
-        throw new Error("Foreign key constraint violation");
-      }
-      
       try {
         const query3 =
           "insert into itemsorder (oid, cid, wid, pid, sid, quantity) values ($1, $2, $3, $4, $5, $6)";
@@ -261,6 +254,42 @@ app.post("/addTheOrder", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(400);
+  }
+});
+
+app.post("/selection", async (req, res) => {
+  const { oid, cid, price, oidSwitch, cidSwitch } = req.body;
+  try {
+    let query = "select * from orders where oid=$1 $200 cid=$2 $300 price=$3";
+    query = query.replace("$200", oidSwitch);
+    query = query.replace("$300", cidSwitch);
+    console.log(query);
+
+    const result = await pool.query(query, [oid, cid, price]);
+    const colNumaes = result.fields.map((field) => field.name);
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(400);
+  }
+});
+
+app.post("/insertThingy", async (req, res) => {
+  const { wid, adress, mid, flag } = req.body;
+  try {
+    const query =
+      "insert into warehouse(wid, address, mid, flag) values ($1, $2, $3, $4)";
+
+    const result = await pool.query(query, [wid, adress, mid, flag]);
+    res.status(200).json({ msg: "Added To the Database" });
+    console.log("We got into here");
+  } catch (error) {
+    res.status(400);
+    console.log(error);
   }
 });
 
@@ -366,26 +395,6 @@ app.get("/warehouseNetWorth/:value", async (req, res) => {
   }
 });
 
-app.get("/ItemPurchasedGreater/:value", async (req, res) => {
-  try {
-    const num = req.params.value;
-    console.log(num);
-    const query= "select c.cid, c.name, c.email, sum(i.quantity) as purchased from client c natural join itemsorder i group by c.cid, c.name, c.email having sum(i.quantity)> $1";
-    const value = [num];
-    const result = await pool.query(query, value);
-    const colNumaes = result.fields.map((field) => field.name);
-    // column names and rows that have all the rows, to display the table.
-    const data = {
-      colNumaes,
-      rows: result.rows,
-    };
-    console.log(colNumaes);
-    res.json(data);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
 app.get("/getGivenQuery", async (req, res) => {
   try {
     const result = await pool.query("select* from inventory");
@@ -450,6 +459,22 @@ app.post("/updatInventory", async (req, res) => {
   }
 });
 
+app.get("/order", async (req, res) => {
+  try {
+    const result = await pool.query("select * from orders");
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    res.status(400).json({ msg: error.message });
+  }
+});
+
 // join itemorder and order
 app.get("/joinOrder", async (req, res) => {
   try {
@@ -504,36 +529,5 @@ app.get("/product", async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(400).json({ msg: error.message });
-  }
-});
-
-
-
-// selection:
-app.post("/selectInventory", async (req, res) => {
-  const filters = req.body.filters;
-  if (!filters) {
-    return res.status(400).json({ msg: "No filters provided" });
-  }
-  try {
-    const query = "SELECT * FROM inventory WHERE ";
-
-    const filters_toString = [];
-
-    // for loop that connects all conditions
-    filters.forEach((filter, index) => {
-      if (index > 0){
-        query += " AND ";
-      }
-      // place the value of filter in another array and concate those in the end to prevent attack
-      query += `${filter.field} ${filter.operator} $${index + 1}`;
-      filters_toString.push(filter.value);
-    });
-    
-    const result = await pool.query(query,filters_toString);
-    res.json(result.rows);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Error" });
   }
 });
