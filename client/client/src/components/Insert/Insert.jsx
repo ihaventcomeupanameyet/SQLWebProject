@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Insert";
 import AccessibleTable from "../Table/table";
+import { toast } from "react-toastify";
 
 function Insert() {
   const [data, setData] = useState([]);
@@ -31,7 +32,9 @@ function Insert() {
       if (res.status === 200) {
         fetchWharehouses();
       }
+      toast.success("Insert succsess");
     } catch (error) {
+      toast.error(error);
       console.error("Error fetching data:", error);
     }
   };

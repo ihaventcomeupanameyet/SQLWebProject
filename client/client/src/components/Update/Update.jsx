@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./update.css";
 import AccessibleTable from "../Table/table";
+import { toast } from "react-toastify";
 
 function Update() {
   const [data, setData] = useState([]);
@@ -50,7 +51,9 @@ function Update() {
       }
       const data = await res.json();
       console.log(data);
+      toast.success("Update succeaful");
     } catch (error) {
+      toast.error(error);
       console.error("Error fetching data:", error);
     }
   };

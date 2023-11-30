@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AccessibleTable from "../Table/table";
 import "./selection.css";
+import { toast } from "react-toastify";
 
 function Selection() {
   const [data, setData] = useState([]);
@@ -31,7 +32,9 @@ function Selection() {
       const data = await res.json();
       console.log(data);
       setData(data);
+      toast.success("Selection succesful");
     } catch (error) {
+      toast.error(error);
       console.error("Error fetching data:", error);
     }
   };

@@ -103,8 +103,9 @@ app.get("/products", async (req, res) => {
     console.log(error);
   }
 });
-app.get("/join", async (req, res) => {
+app.post("/join", async (req, res) => {
   try {
+    const { quantity } = req.body;
     const result = await pool.query(
       "select* from orders o, itemsorder i where i.oid=o.oid"
     );
@@ -417,12 +418,14 @@ app.listen(port, () => {
 
 // delete items(product)
 app.post("/delete", async (req, res) => {
-  const { d_pid } = req.body;
+  const { pid } = req.body;
   try {
     const query = "delete from product where pid = $1";
-    const result = await pool.query(query, [d_pid]); // this is the query from the database, output is built in, success or unsucess
+    const result = await pool.query(query, [pid]); // this is the query from the database, output is built in, success or unsucess
     // ONLY GETS THE TUPPLES, NOT COLUMN NAMES
+    res.status(200);
   } catch (error) {
+    console.log(error);
     return res.status(400).json({ msg: error.data });
   }
 });
@@ -491,6 +494,26 @@ app.get("/joinOrder", async (req, res) => {
     res.json(data);
   } catch (error) {
     res.status(400).json({ msg: error.message });
+  }
+});
+app.get("/ItemPurchasedGreater/:value", async (req, res) => {
+  try {
+    const num = req.params.value;
+    console.log(num);
+    const query =
+      "select c.cid, c.name, c.email, sum(i.quantity) as purchased from client c natural join itemsorder i group by c.cid, c.name, c.email having sum(i.quantity)> $1";
+    const value = [num];
+    const result = await pool.query(query, value);
+    const colNumaes = result.fields.map((field) => field.name);
+    // column names and rows that have all the rows, to display the table.
+    const data = {
+      colNumaes,
+      rows: result.rows,
+    };
+    console.log(colNumaes);
+    res.json(data);
+  } catch (error) {
+    console.log(error);
   }
 });
 

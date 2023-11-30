@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import "./Projection.css";
 import AccessibleTable from "../Table/table";
+import { toast } from "react-toastify";
 
 function Projection() {
   const [data, setData] = useState([]);
@@ -29,7 +30,9 @@ function Projection() {
       const data = await res.json();
       console.log(data);
       setData(data);
+      toast.success("Projection succesful");
     } catch (error) {
+      toast.success(error);
       console.error("Error fetching data:", error);
     }
   };
