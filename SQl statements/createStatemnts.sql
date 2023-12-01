@@ -149,3 +149,4 @@ alter table orders alter column price type numeric(15, 4);
 alter table itemsorder drop constraint itemsorder_pk;
 alter table itemsorder add primary key (oid, cid, wid, pid,sid);
 select name,cid from client;
+insert into warehouse(wid, address, mid, flag) values(6, );

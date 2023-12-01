@@ -18,7 +18,6 @@ function createData(name, calories, fat, carbs, protein) {
 // ];
 
 export default function AccessibleTable({ rows, collumns }) {
-  console.log(rows);
   if (!rows) return "loading";
   return (
     <TableContainer sx={{ maxWidth: 500, maxHeight: 500 }} component={Paper}>
@@ -34,7 +33,7 @@ export default function AccessibleTable({ rows, collumns }) {
         </TableHead>
         <TableBody>
           {rows.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={`${index}-${row}`}>
               {collumns.map((column) => (
                 <TableCell key={`${index}-${column}`} align="right">
                   {row[column]}

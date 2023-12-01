@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./delete.css";
 import AccessibleTable from "../Table/table";
+import { toast } from "react-toastify";
 
 export default function Delete() {
   const [data, setData] = useState([]);
@@ -29,7 +30,9 @@ export default function Delete() {
       }
       const data = await res.json();
       console.log(data);
+      toast.success("Delete sucessful");
     } catch (error) {
+      toast.error(error);
       console.error("Error fetching data:", error);
     }
   };

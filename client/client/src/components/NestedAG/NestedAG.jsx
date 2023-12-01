@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./NestedAG.css";
 import AccessibleTable from "../Table/table";
+import { toast } from "react-toastify";
 
 export default function NestedAG() {
   const [data, setData] = useState([]);
@@ -10,18 +11,24 @@ export default function NestedAG() {
       const reponse = await fetch("http://localhost:3000/AvgOrderPerchase");
       const data = await reponse.json();
       setData(data);
+      toast.success("Nested Agreggation succseful");
     } catch (error) {
+      toast.error(error);
       console.log("Error gettting the data", error);
     }
-  }
-  return <div>
-    <div className="center"> 
-    {data ? (
+  };
+  return (
+    <div>
+      <div className="center">
+        {data ? (
           <AccessibleTable rows={data.rows} collumns={data.colNumaes} />
         ) : null}
       </div>
-    <form onSubmit={handleSubmit}>
-    <button type="submit">Find average number of item purchased per order for each client</button>
-    </form>
-   </div>;
+      <form onSubmit={handleSubmit}>
+        <button type="submit">
+          Find average number of item purchased per order for each client
+        </button>
+      </form>
+    </div>
+  );
 }

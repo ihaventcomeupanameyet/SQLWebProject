@@ -11,9 +11,8 @@ export default function ManagerMainPage() {
 
   const [data, setData] = useState([]);
   const [user, setUser] = useState("");
-  
-  const [valueThreshold, setValueThreshold] = useState("");
 
+  const [valueThreshold, setValueThreshold] = useState("");
 
   const onChangedpid = (event) => {
     set_dpid(event.target.value);
@@ -125,24 +124,22 @@ export default function ManagerMainPage() {
     }
   }
 
-  
-
   async function getInventoryAbove() {
     if (!valueThreshold) {
       alert("Please enter a value threshold");
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/inventoryAbove/${valueThreshold}`);
+      const response = await fetch(
+        `http://localhost:3000/inventoryAbove/${valueThreshold}`
+      );
       const data = await response.json();
-      setData(data); 
+      setData(data);
     } catch (error) {
       console.error("Error fetching inventory", error);
-
     }
   }
 
-  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -160,8 +157,9 @@ export default function ManagerMainPage() {
     setUser(localStorage.getItem("token"));
   }, []);
 
-return (
-  <div className="NewClass">
-  </div>
-);
+  return (
+    <div className="NewClass">
+      <div></div>
+    </div>
+  );
 }
