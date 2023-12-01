@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./Aggregation.css";
 import AccessibleTable from "../Table/table";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 function Aggregation() {
   const [data, setData] = useState([]);
   const [value, setValue] = useState("");
+
   const onChangeValue = (event) => {
     setValue(event.target.value);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const reponse = await fetch(
         `http://localhost:3000/warehouseNetWorth/${value}`
       );
+      if(!reponse.ok) {
+        throw new Error('Faield to fetch data');
+      }
       const data = await reponse.json();
       setData(data);
       toast.success("Agreggation sucessfully executed");
@@ -25,6 +30,7 @@ function Aggregation() {
   };
   return (
     <div>
+      <ToastContainer />
       <div className="center">
         {data ? (
           <AccessibleTable rows={data.rows} collumns={data.colNumaes} />
