@@ -437,7 +437,7 @@ app.post("/delete", async (req, res) => {
     const query = "delete from product where pid = $1";
     const result = await pool.query(query, [pid]); // this is the query from the database, output is built in, success or unsucess
     // ONLY GETS THE TUPPLES, NOT COLUMN NAMES
-    res.status(200);
+    res.status(200).json();
   } catch (error) {
     console.log(error);
     res.status(400).json();

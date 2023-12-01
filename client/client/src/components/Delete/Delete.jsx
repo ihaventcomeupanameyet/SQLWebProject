@@ -24,18 +24,13 @@ export default function Delete() {
           pid: deleteItem,
         }),
       });
-      if (res.status === 200) {
+      if (res.status == 200) {
         fetchDataProducts();
         fetchDataInentory();
-        const data = await res.json();
-        console.log(data);
         toast.success("Delete sucessful");
       } else {
         toast.error("Such product does not exist");
       }
-      //const data = await res.json();
-      //console.log(data);
-      //toast.success("Delete sucessful");
     } catch (error) {
       toast.error(error.message);
       console.error("Error fetching data:", error);
