@@ -108,9 +108,9 @@ app.get("/products", async (req, res) => {
 app.post("/join", async (req, res) => {
   try {
     const { quantity } = req.body;
-    const result = await pool.query(
-      "select* from orders o, itemsorder i where i.oid=o.oid"
-    );
+    const query = "select* from orders o, itemsorder i where i.oid=o.oid and o.cid=i.cid and i.quantity =$1";
+    const result = await pool.query(query, [quantity]);
+    
     const colNumaes = result.fields.map((field) => field.name);
     // column names and rows that have all the rows, to display the table.
     const data = {
