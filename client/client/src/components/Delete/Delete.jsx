@@ -27,12 +27,17 @@ export default function Delete() {
       if (res.status === 200) {
         fetchDataProducts();
         fetchDataInentory();
+        const data = await res.json();
+        console.log(data);
+        toast.success("Delete sucessful");
+      } else {
+        toast.error("Such product does not exist");
       }
-      const data = await res.json();
-      console.log(data);
-      toast.success("Delete sucessful");
+      //const data = await res.json();
+      //console.log(data);
+      //toast.success("Delete sucessful");
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
       console.error("Error fetching data:", error);
     }
   };

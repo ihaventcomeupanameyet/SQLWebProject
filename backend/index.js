@@ -83,7 +83,9 @@ app.post("/proyection", async (req, res) => {
     console.log(colNumaes);
     res.json(data);
   } catch (error) {
+    res.status(400).json();
     console.log(error);
+    console.log("hello?");
   }
 });
 
@@ -275,7 +277,7 @@ app.post("/selection", async (req, res) => {
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
-    res.status(400);
+    res.status(400).json();
   }
 });
 
@@ -289,7 +291,7 @@ app.post("/insertThingy", async (req, res) => {
     res.status(200).json({ msg: "Added To the Database" });
     console.log("We got into here");
   } catch (error) {
-    res.status(400);
+    res.status(400).json();
     console.log(error);
   }
 });
@@ -332,10 +334,17 @@ app.post("/updateInven", async (req, res) => {
     const query =
       "update inventory set item_count = $1, price=$2 where wid=$3 and pid=$4 and sid=$5";
     const value = [size, price, wid, pid, sid];
+
+    const query1 = "select * from inventory where wid=$1 and pid=$2 and sid=$3";
+    const result1 = await pool.query(query1, [wid,pid,sid]);
+    if (result1 && result1.rows && result1.rows.length == 0) {
+      throw new Error();
+    }
+
     const result = await pool.query(query, value);
     res.status(200).json({ msg: "Altered item count" });
   } catch (error) {
-    console.log(error);
+    res.status(400).json();
   }
 });
 
@@ -420,13 +429,18 @@ app.listen(port, () => {
 app.post("/delete", async (req, res) => {
   const { pid } = req.body;
   try {
+    const query1 = "select * from product where pid = $1";
+    const result1 = await pool.query(query1, [pid]);
+    if (result1 && result1.rows && result1.rows.length == 0) {
+      throw new Error("Such product does not exist");
+    }
     const query = "delete from product where pid = $1";
     const result = await pool.query(query, [pid]); // this is the query from the database, output is built in, success or unsucess
     // ONLY GETS THE TUPPLES, NOT COLUMN NAMES
     res.status(200);
   } catch (error) {
     console.log(error);
-    return res.status(400).json({ msg: error.data });
+    res.status(400).json();
   }
 });
 

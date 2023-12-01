@@ -18,7 +18,7 @@ export default function () {
         headers: {
           "Content-Type": "application/json",
         },
-
+      
         body: JSON.stringify({
           email,
           password,
@@ -30,7 +30,7 @@ export default function () {
       if (data.user) {
         localStorage.setItem("token", data.user);
         window.location.href = "/";
-      }
+      } 
 
       console.log(data);
     } catch (error) {

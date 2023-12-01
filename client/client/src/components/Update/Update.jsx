@@ -48,10 +48,12 @@ function Update() {
         fetchWarehouses();
         fetchInventoryGetTable();
         clear();
+        const data = await res.json();
+        console.log(data);
+        toast.success("Update succeaful");
+      } else {
+        toast.error("Such inventory does not exist");
       }
-      const data = await res.json();
-      console.log(data);
-      toast.success("Update succeaful");
     } catch (error) {
       toast.error(error);
       console.error("Error fetching data:", error);

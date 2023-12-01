@@ -34,7 +34,7 @@ function Insert() {
       }
       toast.success("Insert succsess");
     } catch (error) {
-      toast.error(error);
+      toast.error("Duplicate key value");
       console.error("Error fetching data:", error);
     }
   };

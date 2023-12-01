@@ -26,13 +26,15 @@ function Projection() {
 
       if (res.status === 200) {
         clear();
+        const data = await res.json();
+        console.log(data);
+        setData(data);
+        toast.success("Projection succesful");
+      } else {
+        toast.error("Table or column does not exist");
       }
-      const data = await res.json();
-      console.log(data);
-      setData(data);
-      toast.success("Projection succesful");
     } catch (error) {
-      toast.success(error);
+      toast.error(error);
       console.error("Error fetching data:", error);
     }
   };

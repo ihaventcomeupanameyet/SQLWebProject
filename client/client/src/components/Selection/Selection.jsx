@@ -28,11 +28,14 @@ function Selection() {
           cidSwitch,
         }),
       });
-
-      const data = await res.json();
-      console.log(data);
-      setData(data);
-      toast.success("Selection succesful");
+      if (res.status==200) {
+        const data = await res.json();
+        console.log(data);
+        setData(data);
+        toast.success("Selection succesful");
+      } else {
+        toast.error("Enter integer?");
+      }
     } catch (error) {
       toast.error(error);
       console.error("Error fetching data:", error);
